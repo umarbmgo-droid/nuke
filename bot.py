@@ -76,4 +76,4 @@ async def nuke(ctx):
                 break  # If rate limited, move to next channel
 
 # ===== RUN BOT =====
-bot.run(TOKEN))
+bot.run(TOKEN)  # ← FIXED: Removed the extra parenthesis
